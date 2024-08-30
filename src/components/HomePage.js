@@ -5,6 +5,7 @@ const HomePage = () => {
 	const [balance, setBalance] = useState(0);
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
+	const [modalStage, setModalStage] = useState("initial"); // "initial" or "send"
 	const modalRef = useRef(null); // Ref for the modal container
 
 	useEffect(() => {
@@ -31,7 +32,30 @@ const HomePage = () => {
 	}, [showModal]);
 
 	const handlePlusClick = () => {
-		setShowModal(!showModal);
+		setShowModal(true);
+		setModalStage("initial");
+	};
+
+	const handleSendClick = () => {
+		setModalStage("send");
+	};
+
+	const handleRequestClick = () => {
+		// Handle the REQUEST button logic here
+		alert("REQUEST clicked");
+		setShowModal(false);
+	};
+
+	const handleScanQRClick = () => {
+		// Handle the Scan QR button logic here
+		alert("Scan QR clicked");
+		setShowModal(false);
+	};
+
+	const handleSendManuallyClick = () => {
+		// Handle the Send manually button logic here
+		alert("Send manually clicked");
+		setShowModal(false);
 	};
 
 	return (
@@ -58,9 +82,31 @@ const HomePage = () => {
 			</button>
 
 			{showModal && (
-				<div ref={modalRef} style={styles.modalContainer}>
-					<button style={styles.modalButton}>SEND</button>
-					<button style={styles.modalButton}>REQUEST</button>
+				<div style={styles.modalBackdrop}>
+					<div ref={modalRef} style={styles.modalContainer}>
+						{modalStage === "initial" ? (
+							<>
+								<button style={styles.modalButton} onClick={handleSendClick}>
+									SEND
+								</button>
+								<button style={styles.modalButton} onClick={handleRequestClick}>
+									REQUEST
+								</button>
+							</>
+						) : modalStage === "send" ? (
+							<>
+								<button style={styles.modalButton} onClick={handleScanQRClick}>
+									Scan QR
+								</button>
+								<button
+									style={styles.modalButton}
+									onClick={handleSendManuallyClick}
+								>
+									Send manually
+								</button>
+							</>
+						) : null}
+					</div>
 				</div>
 			)}
 		</div>
@@ -111,15 +157,25 @@ const styles = {
 		cursor: "pointer",
 		zIndex: 10,
 	},
-	modalContainer: {
+	modalBackdrop: {
 		position: "fixed",
-		bottom: "80px",
-		left: "50%",
-		transform: "translateX(-50%)",
+		top: 0,
+		left: 0,
+		width: "100%",
+		height: "100%",
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
 		display: "flex",
 		justifyContent: "center",
-		gap: "10px",
+		alignItems: "center",
 		zIndex: 10,
+	},
+	modalContainer: {
+		backgroundColor: "white",
+		padding: "20px",
+		borderRadius: "10px",
+		display: "flex",
+		flexDirection: "column",
+		gap: "10px",
 	},
 	modalButton: {
 		padding: "10px 20px",
