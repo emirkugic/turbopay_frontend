@@ -1,43 +1,34 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Html5Qrcode } from "html5-qrcode";
-import financeData from "../data/financeData.json";
 import ManualSendModal from "./ManualSendModal";
 import QRScannerModal from "./QRScannerModal";
 import ConfirmationModal from "./ConfirmationModal";
+import financeData from "../data/financeData.json";
 import styles from "./styles";
 
 const HomePage = () => {
 	const [balance, setBalance] = useState(0);
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
-	const [modalStage, setModalStage] = useState("initial"); // "initial" or "send"
+	const [modalStage, setModalStage] = useState("initial"); // "initial", "send", or "manual"
 	const [sendAmount, setSendAmount] = useState("");
 	const [recipientEmail, setRecipientEmail] = useState("");
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-	const [qrData, setQrData] = useState(null); // Store QR code data
+	const [qrData, setQrData] = useState(null);
 	const [showQrModal, setShowQrModal] = useState(false);
-	const [html5Qrcode, setHtml5Qrcode] = useState(null);
 
-	const modalRef = useRef(null); // Ref for the modal container
+	const modalRef = useRef(null);
 
 	useEffect(() => {
-		// Load balance and history data from JSON file
 		setBalance(financeData.balance);
 		setHistory(financeData.history);
 	}, []);
 
 	useEffect(() => {
-		// Close the modal if clicking outside of it
 		const handleClickOutside = (event) => {
 			if (modalRef.current && !modalRef.current.contains(event.target)) {
 				setShowModal(false);
-				setShowConfirmationModal(false); // Also close confirmation modal
-				setShowQrModal(false); // Also close QR modal
-				if (html5Qrcode) {
-					html5Qrcode.stop().catch((error) => {
-						console.error("Error stopping QR code scanner:", error);
-					});
-				}
+				setShowConfirmationModal(false);
+				setShowQrModal(false);
 			}
 		};
 
@@ -48,7 +39,7 @@ const HomePage = () => {
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [showModal, showConfirmationModal, showQrModal, html5Qrcode]);
+	}, [showModal, showConfirmationModal, showQrModal]);
 
 	const handlePlusClick = () => {
 		setShowModal(true);
@@ -60,14 +51,12 @@ const HomePage = () => {
 	};
 
 	const handleRequestClick = () => {
-		// Handle the REQUEST button logic here
 		alert("REQUEST clicked");
 		setShowModal(false);
 	};
 
 	const handleScanQRClick = () => {
 		setShowQrModal(true);
-		setModalStage("send");
 	};
 
 	const handleSendManuallyClick = () => {
@@ -105,39 +94,19 @@ const HomePage = () => {
 	};
 
 	const handleQRScanSuccess = (decodedText) => {
-		const data = JSON.parse(decodedText);
-		setQrData(data);
-		setShowQrModal(false);
-		setShowConfirmationModal(true);
+		try {
+			const data = JSON.parse(decodedText);
+			setQrData(data);
+			setShowQrModal(false);
+			setShowConfirmationModal(true);
+		} catch (error) {
+			console.error("Failed to parse QR code data:", error);
+		}
 	};
 
 	const handleQRScanError = (error) => {
 		console.error("QR scan error:", error);
 	};
-
-	useEffect(() => {
-		if (showQrModal && !html5Qrcode) {
-			const qrCode = new Html5Qrcode("qr-scanner");
-			setHtml5Qrcode(qrCode);
-			qrCode
-				.start(
-					{ facingMode: "environment" },
-					{ fps: 10, qrbox: 250 },
-					handleQRScanSuccess,
-					handleQRScanError
-				)
-				.catch((error) => {
-					console.error("Error starting QR code scanner:", error);
-				});
-		}
-		return () => {
-			if (html5Qrcode) {
-				html5Qrcode.stop().catch((error) => {
-					console.error("Error stopping QR code scanner:", error);
-				});
-			}
-		};
-	}, [showQrModal, html5Qrcode]);
 
 	return (
 		<div style={styles.container}>
@@ -203,6 +172,7 @@ const HomePage = () => {
 				<QRScannerModal
 					handleQRScanSuccess={handleQRScanSuccess}
 					handleQRScanError={handleQRScanError}
+					onClose={() => setShowQrModal(false)}
 				/>
 			)}
 
