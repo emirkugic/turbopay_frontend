@@ -13,7 +13,7 @@ const QRScannerModal = ({
 
 	useEffect(() => {
 		const startScanner = async () => {
-			if (qrCodeInstance.current || isScannerRunning.current) return; // Prevent multiple instances
+			if (qrCodeInstance.current || isScannerRunning.current) return; // Prevents multiple camera instances
 
 			try {
 				const qrCode = new Html5Qrcode(qrCodeRef.current.id);

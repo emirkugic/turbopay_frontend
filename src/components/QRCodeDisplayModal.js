@@ -1,6 +1,5 @@
-// QRCodeDisplayModal.js
 import React from "react";
-import { QRCodeSVG } from "qrcode.react"; // Importing QRCodeSVG
+import { QRCodeSVG } from "qrcode.react";
 import styles from "./styles";
 
 const QRCodeDisplayModal = ({ qrData, onClose }) => {
