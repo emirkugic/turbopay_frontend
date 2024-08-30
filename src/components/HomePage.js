@@ -6,6 +6,9 @@ const HomePage = () => {
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
 	const [modalStage, setModalStage] = useState("initial"); // "initial" or "send"
+	const [sendAmount, setSendAmount] = useState("");
+	const [recipientEmail, setRecipientEmail] = useState("");
+	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const modalRef = useRef(null); // Ref for the modal container
 
 	useEffect(() => {
@@ -19,17 +22,18 @@ const HomePage = () => {
 		const handleClickOutside = (event) => {
 			if (modalRef.current && !modalRef.current.contains(event.target)) {
 				setShowModal(false);
+				setShowConfirmationModal(false); // Also close confirmation modal
 			}
 		};
 
-		if (showModal) {
+		if (showModal || showConfirmationModal) {
 			document.addEventListener("mousedown", handleClickOutside);
 		}
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [showModal]);
+	}, [showModal, showConfirmationModal]);
 
 	const handlePlusClick = () => {
 		setShowModal(true);
@@ -53,9 +57,37 @@ const HomePage = () => {
 	};
 
 	const handleSendManuallyClick = () => {
-		// Handle the Send manually button logic here
-		alert("Send manually clicked");
+		setModalStage("manual");
+	};
+
+	const handleAmountChange = (event) => {
+		setSendAmount(event.target.value);
+	};
+
+	const handleEmailChange = (event) => {
+		setRecipientEmail(event.target.value);
+	};
+
+	const handleSendMoneyClick = () => {
+		if (sendAmount && recipientEmail) {
+			setShowConfirmationModal(true);
+		} else {
+			alert("Please fill in both fields.");
+		}
+	};
+
+	const handleConfirmSend = () => {
+		console.log("Sending money");
+		console.log("Amount:", sendAmount);
+		console.log("Recipient's email:", recipientEmail);
+		setShowConfirmationModal(false);
 		setShowModal(false);
+		setSendAmount("");
+		setRecipientEmail("");
+	};
+
+	const handleCancelConfirm = () => {
+		setShowConfirmationModal(false);
 	};
 
 	return (
@@ -105,7 +137,51 @@ const HomePage = () => {
 									Send manually
 								</button>
 							</>
+						) : modalStage === "manual" ? (
+							<div style={styles.manualModalContainer}>
+								<label style={styles.label}>
+									Amount:
+									<input
+										type="number"
+										value={sendAmount}
+										onChange={handleAmountChange}
+										style={styles.input}
+										min="0"
+									/>
+								</label>
+								<label style={styles.label}>
+									Recipient's email:
+									<input
+										type="email"
+										value={recipientEmail}
+										onChange={handleEmailChange}
+										style={styles.input}
+									/>
+								</label>
+								<button
+									style={styles.submitButton}
+									onClick={handleSendMoneyClick}
+								>
+									Send Money
+								</button>
+							</div>
 						) : null}
+					</div>
+				</div>
+			)}
+
+			{showConfirmationModal && (
+				<div style={styles.modalBackdrop}>
+					<div ref={modalRef} style={styles.confirmationModalContainer}>
+						<h3>Confirm Transaction</h3>
+						<p>Amount: ${sendAmount}</p>
+						<p>Recipient's email: {recipientEmail}</p>
+						<button style={styles.confirmButton} onClick={handleConfirmSend}>
+							Confirm
+						</button>
+						<button style={styles.cancelButton} onClick={handleCancelConfirm}>
+							Cancel
+						</button>
 					</div>
 				</div>
 			)}
@@ -176,6 +252,59 @@ const styles = {
 		display: "flex",
 		flexDirection: "column",
 		gap: "10px",
+	},
+	manualModalContainer: {
+		backgroundColor: "white",
+		padding: "20px",
+		borderRadius: "10px",
+		display: "flex",
+		flexDirection: "column",
+		gap: "15px",
+	},
+	label: {
+		display: "flex",
+		flexDirection: "column",
+		marginBottom: "10px",
+	},
+	input: {
+		padding: "10px",
+		border: "1px solid #ccc",
+		borderRadius: "5px",
+		marginTop: "5px",
+		width: "100%",
+	},
+	submitButton: {
+		padding: "10px",
+		backgroundColor: "#4CAF50",
+		color: "white",
+		border: "none",
+		borderRadius: "5px",
+		cursor: "pointer",
+	},
+	confirmationModalContainer: {
+		backgroundColor: "white",
+		padding: "20px",
+		borderRadius: "10px",
+		textAlign: "center",
+		display: "flex",
+		flexDirection: "column",
+		gap: "15px",
+	},
+	confirmButton: {
+		padding: "10px",
+		backgroundColor: "#4CAF50",
+		color: "white",
+		border: "none",
+		borderRadius: "5px",
+		cursor: "pointer",
+	},
+	cancelButton: {
+		padding: "10px",
+		backgroundColor: "#f44336",
+		color: "white",
+		border: "none",
+		borderRadius: "5px",
+		cursor: "pointer",
 	},
 	modalButton: {
 		padding: "10px 20px",
