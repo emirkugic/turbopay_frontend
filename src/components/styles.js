@@ -77,10 +77,9 @@ const styles = {
 	},
 	input: {
 		padding: "10px",
-		border: "1px solid #ccc",
-		borderRadius: "5px",
-		marginTop: "5px",
+		margin: "10px 0",
 		width: "100%",
+		boxSizing: "border-box",
 	},
 	submitButton: {
 		padding: "10px",

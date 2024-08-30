@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import ManualSendModal from "./ManualSendModal";
 import QRScannerModal from "./QRScannerModal";
 import ConfirmationModal from "./ConfirmationModal";
+import RequestMoneyModal from "./RequestMoneyModal";
+import QRCodeDisplayModal from "./QRCodeDisplayModal";
 import financeData from "../data/financeData.json";
 import styles from "./styles";
 
@@ -9,12 +11,14 @@ const HomePage = () => {
 	const [balance, setBalance] = useState(0);
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
-	const [modalStage, setModalStage] = useState("initial");
+	const [modalStage, setModalStage] = useState("initial"); // "initial", "send", or "manual"
 	const [sendAmount, setSendAmount] = useState("");
 	const [recipientEmail, setRecipientEmail] = useState("");
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [qrData, setQrData] = useState(null);
 	const [showQrModal, setShowQrModal] = useState(false);
+	const [showRequestMoneyModal, setShowRequestMoneyModal] = useState(false);
+	const [showQrDisplayModal, setShowQrDisplayModal] = useState(false);
 
 	const modalRef = useRef(null);
 
@@ -29,17 +33,16 @@ const HomePage = () => {
 				setShowModal(false);
 				setShowConfirmationModal(false);
 				setShowQrModal(false);
+				setShowRequestMoneyModal(false);
+				setShowQrDisplayModal(false);
 			}
 		};
 
-		if (showModal || showConfirmationModal || showQrModal) {
-			document.addEventListener("mousedown", handleClickOutside);
-		}
-
+		document.addEventListener("mousedown", handleClickOutside);
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [showModal, showConfirmationModal, showQrModal]);
+	}, [modalRef]);
 
 	const handlePlusClick = () => {
 		setShowModal(true);
@@ -51,8 +54,7 @@ const HomePage = () => {
 	};
 
 	const handleRequestClick = () => {
-		alert("REQUEST clicked");
-		setShowModal(false);
+		setShowRequestMoneyModal(true);
 	};
 
 	const handleScanQRClick = () => {
@@ -73,8 +75,6 @@ const HomePage = () => {
 
 	const handleSendMoneyClick = () => {
 		if (sendAmount && recipientEmail) {
-			setShowModal(false);
-			setShowQrModal(false);
 			setShowConfirmationModal(true);
 		} else {
 			alert("Please fill in both fields.");
@@ -88,7 +88,6 @@ const HomePage = () => {
 			"Recipient's email:",
 			qrData ? qrData.recipientEmail : recipientEmail
 		);
-
 		setShowConfirmationModal(false);
 		setShowModal(false);
 		setSendAmount("");
@@ -105,7 +104,6 @@ const HomePage = () => {
 			const data = JSON.parse(decodedText);
 			setQrData(data);
 			setShowQrModal(false);
-			setShowModal(false);
 			setShowConfirmationModal(true);
 		} catch (error) {
 			console.error("Failed to parse QR code data:", error);
@@ -113,15 +111,24 @@ const HomePage = () => {
 	};
 
 	const handleQRScanError = (error) => {
-		console.log("QR not found");
 		console.error("QR scan error:", error);
+	};
+
+	const handleGenerateQR = (data) => {
+		setQrData(data);
+		setShowQrDisplayModal(true);
+	};
+
+	const handleSendEmail = (data) => {
+		console.log("Requesting money:", data);
+		alert(`Money request of $${data.amount} sent to ${data.recipientEmail}`);
+		// Implement actual email sending logic here
 	};
 
 	return (
 		<div style={styles.container}>
 			<h1>Your Balance: ${balance}</h1>
 			<h2>Finance History</h2>
-
 			<div style={styles.historyContainer}>
 				<ul style={styles.historyList}>
 					{history.map((item, index) => (
@@ -191,6 +198,22 @@ const HomePage = () => {
 					recipientEmail={qrData.recipientEmail}
 					onConfirmSend={handleConfirmSend}
 					onCancelConfirm={handleCancelConfirm}
+				/>
+			)}
+
+			{showRequestMoneyModal && (
+				<RequestMoneyModal
+					ref={modalRef} // Correctly pass the ref here
+					onRequestClose={() => setShowRequestMoneyModal(false)}
+					onGenerateQR={handleGenerateQR}
+					onSendEmail={handleSendEmail}
+				/>
+			)}
+
+			{showQrDisplayModal && (
+				<QRCodeDisplayModal
+					qrData={qrData}
+					onClose={() => setShowQrDisplayModal(false)}
 				/>
 			)}
 		</div>
