@@ -7,16 +7,19 @@ const ConfirmationModal = ({
 	onConfirmSend,
 	onCancelConfirm,
 }) => (
-	<div style={styles.confirmationModalContainer}>
-		<h2>Confirm Transaction</h2>
-		<p>Amount: ${amount}</p>
-		<p>Recipient's email: {recipientEmail}</p>
-		<button style={styles.confirmButton} onClick={onConfirmSend}>
-			Confirm
-		</button>
-		<button style={styles.cancelButton} onClick={onCancelConfirm}>
-			Cancel
-		</button>
+	<div style={styles.confirmationModalBackdrop}>
+		{" "}
+		<div style={styles.confirmationModalContainer}>
+			<h2>Confirm Transaction</h2>
+			<p>Amount: ${amount}</p>
+			<p>Recipient's email: {recipientEmail}</p>
+			<button style={styles.confirmButton} onClick={onConfirmSend}>
+				Confirm
+			</button>
+			<button style={styles.cancelButton} onClick={onCancelConfirm}>
+				Cancel
+			</button>
+		</div>
 	</div>
 );
 

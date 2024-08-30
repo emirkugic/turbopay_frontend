@@ -52,7 +52,7 @@ const styles = {
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-		zIndex: 10,
+		zIndex: 20, // Base z-index for modals
 	},
 	modalContainer: {
 		backgroundColor: "white",
@@ -89,6 +89,19 @@ const styles = {
 		border: "none",
 		borderRadius: "5px",
 		cursor: "pointer",
+	},
+
+	confirmationModalBackdrop: {
+		position: "fixed",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		zIndex: 100, // Highest z-index
 	},
 	confirmationModalContainer: {
 		backgroundColor: "white",

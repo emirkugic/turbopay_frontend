@@ -9,7 +9,7 @@ const HomePage = () => {
 	const [balance, setBalance] = useState(0);
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
-	const [modalStage, setModalStage] = useState("initial"); // "initial", "send", or "manual"
+	const [modalStage, setModalStage] = useState("initial");
 	const [sendAmount, setSendAmount] = useState("");
 	const [recipientEmail, setRecipientEmail] = useState("");
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -73,6 +73,8 @@ const HomePage = () => {
 
 	const handleSendMoneyClick = () => {
 		if (sendAmount && recipientEmail) {
+			setShowModal(false);
+			setShowQrModal(false);
 			setShowConfirmationModal(true);
 		} else {
 			alert("Please fill in both fields.");
@@ -81,12 +83,17 @@ const HomePage = () => {
 
 	const handleConfirmSend = () => {
 		console.log("Sending money");
-		console.log("Amount:", sendAmount);
-		console.log("Recipient's email:", recipientEmail);
+		console.log("Amount:", qrData ? qrData.amount : sendAmount);
+		console.log(
+			"Recipient's email:",
+			qrData ? qrData.recipientEmail : recipientEmail
+		);
+
 		setShowConfirmationModal(false);
 		setShowModal(false);
 		setSendAmount("");
 		setRecipientEmail("");
+		setQrData(null);
 	};
 
 	const handleCancelConfirm = () => {
@@ -98,6 +105,7 @@ const HomePage = () => {
 			const data = JSON.parse(decodedText);
 			setQrData(data);
 			setShowQrModal(false);
+			setShowModal(false);
 			setShowConfirmationModal(true);
 		} catch (error) {
 			console.error("Failed to parse QR code data:", error);
@@ -105,6 +113,7 @@ const HomePage = () => {
 	};
 
 	const handleQRScanError = (error) => {
+		console.log("QR not found");
 		console.error("QR scan error:", error);
 	};
 
