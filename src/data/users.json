@@ -1,8 +1,14 @@
 [
     {
         "id": 1,
-        "name": "John Doe",
+        "name": "Emir Kugic",
         "email": "emir@gmail.com",
         "password": "emir"
+    },
+    {
+        "id": 2,
+        "name": "Ismar Kovacevic",
+        "email": "ismar@gmail.com",
+        "password": "ismar"
     }
 ]
