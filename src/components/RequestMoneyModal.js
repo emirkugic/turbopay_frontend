@@ -16,9 +16,16 @@ const RequestMoneyModal = forwardRef(
 			}
 		}, []);
 
-		// Enhanced event propagation handling
 		const handleModalInteraction = (event) => {
 			event.stopPropagation();
+		};
+
+		const handleSendEmailClick = () => {
+			onSendEmail({
+				amount: requestAmount,
+				recipientEmail: recipientEmail,
+			});
+			onRequestClose();
 		};
 
 		return (
@@ -65,15 +72,7 @@ const RequestMoneyModal = forwardRef(
 						</label>
 					</div>
 					{emailEnabled && (
-						<button
-							style={styles.modalButton}
-							onClick={() =>
-								onSendEmail({
-									amount: requestAmount,
-									recipientEmail: recipientEmail,
-								})
-							}
-						>
+						<button style={styles.modalButton} onClick={handleSendEmailClick}>
 							Send via Email
 						</button>
 					)}

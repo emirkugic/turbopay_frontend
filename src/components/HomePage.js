@@ -123,6 +123,8 @@ const HomePage = () => {
 		console.log("Requesting money:", data);
 		alert(`Money request of $${data.amount} sent to ${data.recipientEmail}`);
 		// Implement actual email sending logic here
+		setShowRequestMoneyModal(false);
+		setShowModal(false);
 	};
 
 	return (
@@ -203,8 +205,11 @@ const HomePage = () => {
 
 			{showRequestMoneyModal && (
 				<RequestMoneyModal
-					ref={modalRef} // Correctly pass the ref here
-					onRequestClose={() => setShowRequestMoneyModal(false)}
+					ref={modalRef}
+					onRequestClose={() => {
+						setShowRequestMoneyModal(false);
+						setShowModal(false);
+					}}
 					onGenerateQR={handleGenerateQR}
 					onSendEmail={handleSendEmail}
 				/>
