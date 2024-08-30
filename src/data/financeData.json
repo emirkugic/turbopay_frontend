@@ -1,0 +1,35 @@
+{
+    "balance": 1200,
+    "history": [
+        {
+            "type": "receive",
+            "amount": 500,
+            "date": "2024-08-01",
+            "details": "Salary"
+        },
+        {
+            "type": "send",
+            "amount": 50,
+            "date": "2024-08-02",
+            "details": "Groceries"
+        },
+        {
+            "type": "send",
+            "amount": 30,
+            "date": "2024-08-03",
+            "details": "Dinner"
+        },
+        {
+            "type": "receive",
+            "amount": 100,
+            "date": "2024-08-10",
+            "details": "Freelance Work"
+        },
+        {
+            "type": "send",
+            "amount": 70,
+            "date": "2024-08-15",
+            "details": "Books"
+        }
+    ]
+}
