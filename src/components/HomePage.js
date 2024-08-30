@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Html5Qrcode } from "html5-qrcode";
 import financeData from "../data/financeData.json";
+import ManualSendModal from "./ManualSendModal";
+import QRScannerModal from "./QRScannerModal";
+import ConfirmationModal from "./ConfirmationModal";
+import styles from "./styles";
 
 const HomePage = () => {
 	const [balance, setBalance] = useState(0);
@@ -9,6 +14,10 @@ const HomePage = () => {
 	const [sendAmount, setSendAmount] = useState("");
 	const [recipientEmail, setRecipientEmail] = useState("");
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+	const [qrData, setQrData] = useState(null); // Store QR code data
+	const [showQrModal, setShowQrModal] = useState(false);
+	const [html5Qrcode, setHtml5Qrcode] = useState(null);
+
 	const modalRef = useRef(null); // Ref for the modal container
 
 	useEffect(() => {
@@ -23,17 +32,23 @@ const HomePage = () => {
 			if (modalRef.current && !modalRef.current.contains(event.target)) {
 				setShowModal(false);
 				setShowConfirmationModal(false); // Also close confirmation modal
+				setShowQrModal(false); // Also close QR modal
+				if (html5Qrcode) {
+					html5Qrcode.stop().catch((error) => {
+						console.error("Error stopping QR code scanner:", error);
+					});
+				}
 			}
 		};
 
-		if (showModal || showConfirmationModal) {
+		if (showModal || showConfirmationModal || showQrModal) {
 			document.addEventListener("mousedown", handleClickOutside);
 		}
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [showModal, showConfirmationModal]);
+	}, [showModal, showConfirmationModal, showQrModal, html5Qrcode]);
 
 	const handlePlusClick = () => {
 		setShowModal(true);
@@ -51,9 +66,8 @@ const HomePage = () => {
 	};
 
 	const handleScanQRClick = () => {
-		// Handle the Scan QR button logic here
-		alert("Scan QR clicked");
-		setShowModal(false);
+		setShowQrModal(true);
+		setModalStage("send");
 	};
 
 	const handleSendManuallyClick = () => {
@@ -89,6 +103,41 @@ const HomePage = () => {
 	const handleCancelConfirm = () => {
 		setShowConfirmationModal(false);
 	};
+
+	const handleQRScanSuccess = (decodedText) => {
+		const data = JSON.parse(decodedText);
+		setQrData(data);
+		setShowQrModal(false);
+		setShowConfirmationModal(true);
+	};
+
+	const handleQRScanError = (error) => {
+		console.error("QR scan error:", error);
+	};
+
+	useEffect(() => {
+		if (showQrModal && !html5Qrcode) {
+			const qrCode = new Html5Qrcode("qr-scanner");
+			setHtml5Qrcode(qrCode);
+			qrCode
+				.start(
+					{ facingMode: "environment" },
+					{ fps: 10, qrbox: 250 },
+					handleQRScanSuccess,
+					handleQRScanError
+				)
+				.catch((error) => {
+					console.error("Error starting QR code scanner:", error);
+				});
+		}
+		return () => {
+			if (html5Qrcode) {
+				html5Qrcode.stop().catch((error) => {
+					console.error("Error stopping QR code scanner:", error);
+				});
+			}
+		};
+	}, [showQrModal, html5Qrcode]);
 
 	return (
 		<div style={styles.container}>
@@ -138,182 +187,35 @@ const HomePage = () => {
 								</button>
 							</>
 						) : modalStage === "manual" ? (
-							<div style={styles.manualModalContainer}>
-								<label style={styles.label}>
-									Amount:
-									<input
-										type="number"
-										value={sendAmount}
-										onChange={handleAmountChange}
-										style={styles.input}
-										min="0"
-									/>
-								</label>
-								<label style={styles.label}>
-									Recipient's email:
-									<input
-										type="email"
-										value={recipientEmail}
-										onChange={handleEmailChange}
-										style={styles.input}
-									/>
-								</label>
-								<button
-									style={styles.submitButton}
-									onClick={handleSendMoneyClick}
-								>
-									Send Money
-								</button>
-							</div>
+							<ManualSendModal
+								sendAmount={sendAmount}
+								recipientEmail={recipientEmail}
+								onAmountChange={handleAmountChange}
+								onEmailChange={handleEmailChange}
+								onSendMoneyClick={handleSendMoneyClick}
+							/>
 						) : null}
 					</div>
 				</div>
 			)}
 
-			{showConfirmationModal && (
-				<div style={styles.modalBackdrop}>
-					<div ref={modalRef} style={styles.confirmationModalContainer}>
-						<h3>Confirm Transaction</h3>
-						<p>Amount: ${sendAmount}</p>
-						<p>Recipient's email: {recipientEmail}</p>
-						<button style={styles.confirmButton} onClick={handleConfirmSend}>
-							Confirm
-						</button>
-						<button style={styles.cancelButton} onClick={handleCancelConfirm}>
-							Cancel
-						</button>
-					</div>
-				</div>
+			{showQrModal && (
+				<QRScannerModal
+					handleQRScanSuccess={handleQRScanSuccess}
+					handleQRScanError={handleQRScanError}
+				/>
+			)}
+
+			{showConfirmationModal && qrData && (
+				<ConfirmationModal
+					amount={qrData.amount}
+					recipientEmail={qrData.recipientEmail}
+					onConfirmSend={handleConfirmSend}
+					onCancelConfirm={handleCancelConfirm}
+				/>
 			)}
 		</div>
 	);
-};
-
-const styles = {
-	container: {
-		position: "relative",
-		padding: "20px",
-		textAlign: "center",
-	},
-	historyContainer: {
-		marginTop: "20px",
-		height: "200px", // Adjust as needed
-		overflowY: "scroll",
-		border: "1px solid #ccc",
-		borderRadius: "5px",
-	},
-	historyList: {
-		listStyleType: "none",
-		padding: "0",
-	},
-	historyItem: {
-		display: "flex",
-		justifyContent: "space-between",
-		padding: "10px 0",
-		borderBottom: "1px solid #ccc",
-	},
-	send: {
-		color: "red",
-	},
-	receive: {
-		color: "green",
-	},
-	addButton: {
-		position: "fixed",
-		bottom: "20px",
-		left: "50%",
-		transform: "translateX(-50%)",
-		backgroundColor: "#4CAF50",
-		color: "white",
-		fontSize: "24px",
-		border: "none",
-		borderRadius: "50%",
-		width: "60px",
-		height: "60px",
-		cursor: "pointer",
-		zIndex: 10,
-	},
-	modalBackdrop: {
-		position: "fixed",
-		top: 0,
-		left: 0,
-		width: "100%",
-		height: "100%",
-		backgroundColor: "rgba(0, 0, 0, 0.5)",
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-		zIndex: 10,
-	},
-	modalContainer: {
-		backgroundColor: "white",
-		padding: "20px",
-		borderRadius: "10px",
-		display: "flex",
-		flexDirection: "column",
-		gap: "10px",
-	},
-	manualModalContainer: {
-		backgroundColor: "white",
-		padding: "20px",
-		borderRadius: "10px",
-		display: "flex",
-		flexDirection: "column",
-		gap: "15px",
-	},
-	label: {
-		display: "flex",
-		flexDirection: "column",
-		marginBottom: "10px",
-	},
-	input: {
-		padding: "10px",
-		border: "1px solid #ccc",
-		borderRadius: "5px",
-		marginTop: "5px",
-		width: "100%",
-	},
-	submitButton: {
-		padding: "10px",
-		backgroundColor: "#4CAF50",
-		color: "white",
-		border: "none",
-		borderRadius: "5px",
-		cursor: "pointer",
-	},
-	confirmationModalContainer: {
-		backgroundColor: "white",
-		padding: "20px",
-		borderRadius: "10px",
-		textAlign: "center",
-		display: "flex",
-		flexDirection: "column",
-		gap: "15px",
-	},
-	confirmButton: {
-		padding: "10px",
-		backgroundColor: "#4CAF50",
-		color: "white",
-		border: "none",
-		borderRadius: "5px",
-		cursor: "pointer",
-	},
-	cancelButton: {
-		padding: "10px",
-		backgroundColor: "#f44336",
-		color: "white",
-		border: "none",
-		borderRadius: "5px",
-		cursor: "pointer",
-	},
-	modalButton: {
-		padding: "10px 20px",
-		backgroundColor: "#4CAF50",
-		color: "white",
-		border: "none",
-		borderRadius: "5px",
-		cursor: "pointer",
-	},
 };
 
 export default HomePage;
