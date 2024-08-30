@@ -44,7 +44,6 @@ const HomePage = () => {
 		};
 	}, [modalRef]);
 
-	// Inject Botpress chat bubble script
 	useEffect(() => {
 		const script1 = document.createElement("script");
 		script1.src = "https://cdn.botpress.cloud/webchat/v2.1/inject.js";
@@ -58,7 +57,6 @@ const HomePage = () => {
 		document.body.appendChild(script1);
 		document.body.appendChild(script2);
 
-		// Clean up the scripts when the component is unmounted
 		return () => {
 			document.body.removeChild(script1);
 			document.body.removeChild(script2);
