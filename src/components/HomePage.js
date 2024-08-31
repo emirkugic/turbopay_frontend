@@ -38,7 +38,7 @@ const HomePage = () => {
 						details: `${
 							item.type.charAt(0).toUpperCase() + item.type.slice(1)
 						} from ${item.from} to ${item.to}`,
-						amount: (item.amount / 1e18).toFixed(5),
+						amount: (item.amount / 1e18).toFixed(5), // Convert Wei to ETH
 						type: item.type,
 					}));
 					setHistory(formattedHistory);

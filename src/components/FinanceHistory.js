@@ -12,7 +12,7 @@ const FinanceHistory = ({ history }) => {
 							<span>{item.date}</span>
 							<span>{item.details}</span>
 							<span style={item.type === "send" ? styles.send : styles.receive}>
-								{item.type === "send" ? "-" : "+"}${item.amount}
+								{item.type === "send" ? "-" : "+"}${item.amount} ETH
 							</span>
 						</li>
 					))}

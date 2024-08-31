@@ -15,7 +15,7 @@ export const loginUser = async (email, password) => {
 		}
 
 		const data = await response.json();
-		return data.token; // Return the JWT token
+		return data.token;
 	} catch (error) {
 		console.error("Error during login:", error);
 		throw error;
@@ -60,7 +60,7 @@ export const fetchUserBalance = async (email) => {
 		}
 
 		const data = await response.json();
-		return data.balance; // Return the balance
+		return data.balance;
 	} catch (error) {
 		console.error("Error fetching balance:", error);
 		throw error;
