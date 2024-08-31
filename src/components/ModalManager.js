@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import ManualSendModal from "./ManualSendModal";
 import QRScannerModal from "./QRScannerModal";
@@ -12,11 +12,18 @@ const ModalManager = ({ modalRef, modalStage, setModalStage, setShowModal }) => 
     const [sendAmount, setSendAmount] = useState("");
     const [recipientEmail, setRecipientEmail] = useState("");
     const [message, setMessage] = useState("");
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [qrData, setQrData] = useState(null);
     const [showQrModal, setShowQrModal] = useState(false);
     const [showRequestMoneyModal, setShowRequestMoneyModal] = useState(false);
     const [showQrDisplayModal, setShowQrDisplayModal] = useState(false);
+
+    useEffect(() => {
+        if (qrData) {
+            setRecipientEmail(qrData.recipientEmail);
+            setSendAmount(qrData.amount);
+            setModalStage("manual");
+        }
+    }, [qrData]);
 
     const prepareAndSendTransaction = async (recipientEmail, amountInWei) => {
         const response = await fetch(`${BASE_URL}/transactions/prepare-send`, {
@@ -61,7 +68,6 @@ const ModalManager = ({ modalRef, modalStage, setModalStage, setShowModal }) => 
             setMessage(`Send successful! Transaction Hash: ${txHash.transactionHash}`);
 
             // Reset state after successful transaction
-            setShowConfirmationModal(false);
             setShowModal(false);
             setSendAmount("");
             setRecipientEmail("");
@@ -73,9 +79,16 @@ const ModalManager = ({ modalRef, modalStage, setModalStage, setShowModal }) => 
         }
     };
 
-    const handleConfirmSend = () => {
-        setShowConfirmationModal(false);
-        handleSendMoneyClick();
+    const handleQRScanSuccess = (decodedText) => {
+        try {
+            const data = JSON.parse(decodedText);
+            setQrData(data);
+            setShowQrModal(false);
+            setModalStage("manual"); // Transition to manual entry screen
+        } catch (error) {
+            console.error("Failed to parse QR code data:", error);
+            setMessage("Failed to parse QR code data.");
+        }
     };
 
     const handleGenerateQR = (data) => {
@@ -125,29 +138,9 @@ const ModalManager = ({ modalRef, modalStage, setModalStage, setShowModal }) => 
 
                 {showQrModal && (
                     <QRScannerModal
-                        handleQRScanSuccess={(decodedText) => {
-                            try {
-                                const data = JSON.parse(decodedText);
-                                setQrData(data);
-                                setShowQrModal(false);
-                                setShowConfirmationModal(true);
-                            } catch (error) {
-                                console.error("Failed to parse QR code data:", error);
-                            }
-                        }}
-                        handleQRScanError={(error) => {
-                            console.error("QR scan error:", error);
-                        }}
+                        handleQRScanSuccess={handleQRScanSuccess}
+                        handleQRScanError={(error) => console.error("QR scan error:", error)}
                         onClose={() => setShowQrModal(false)}
-                    />
-                )}
-
-                {showConfirmationModal && qrData && (
-                    <ConfirmationModal
-                        amount={qrData.amount}
-                        recipientEmail={qrData.recipientEmail}
-                        onConfirmSend={handleConfirmSend}
-                        onCancelConfirm={() => setShowConfirmationModal(false)}
                     />
                 )}
 
