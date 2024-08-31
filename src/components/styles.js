@@ -1,46 +1,51 @@
 const styles = {
 	container: {
 		position: "relative",
-		padding: "20px",
+		padding: "10px",
 		textAlign: "center",
+		fontFamily: "'Arial', sans-serif", // Consistent font for the entire app
 	},
 	historyContainer: {
 		marginTop: "20px",
-		height: "200px",
-		overflowY: "scroll",
-		border: "1px solid #ccc",
-		borderRadius: "5px",
+		height: "auto", // Auto height for flexible content display
+		overflowY: "auto",
+		border: "1px solid #e1e1e1", // Lighter border color
+		borderRadius: "8px",
+		backgroundColor: "#fafafa", // Light background for the list
+		padding: "10px",
 	},
 	historyList: {
 		listStyleType: "none",
 		padding: "0",
+		margin: "0",
 	},
 	historyItem: {
 		display: "flex",
 		justifyContent: "space-between",
-		padding: "10px 0",
-		borderBottom: "1px solid #ccc",
+		alignItems: "center",
+		padding: "12px 20px", // More padding for better touch targets
+		borderBottom: "1px solid #e1e1e1",
+		fontSize: "16px", // Larger font for readability on mobile
 	},
 	send: {
-		color: "red",
+		color: "#e57373", // Softer red
 	},
 	receive: {
-		color: "green",
+		color: "#81c784", // Softer green
 	},
 	addButton: {
 		position: "fixed",
 		bottom: "20px",
-		left: "50%",
-		transform: "translateX(-50%)",
-		backgroundColor: "#4CAF50",
+		right: "20px", // Changed from left to right for better accessibility
+		backgroundColor: "#4CAF50", // Keep the button visually prominent
 		color: "white",
 		fontSize: "24px",
 		border: "none",
 		borderRadius: "50%",
-		width: "60px",
-		height: "60px",
+		width: "56px", // Slightly reduced for aesthetics
+		height: "56px",
 		cursor: "pointer",
-		zIndex: 10,
+		boxShadow: "0 2px 5px rgba(0,0,0,0.2)", // Subtle shadow for depth
 	},
 	modalBackdrop: {
 		position: "fixed",
@@ -58,7 +63,8 @@ const styles = {
 		backgroundColor: "#fff",
 		borderRadius: "8px",
 		padding: "20px",
-		width: "300px",
+		width: "90%", // Responsive width
+		maxWidth: "400px", // Maximum width for larger devices
 		boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
 		textAlign: "center",
 	},
@@ -90,57 +96,6 @@ const styles = {
 		border: "none",
 		borderRadius: "5px",
 		cursor: "pointer",
-	},
-
-	confirmationModalBackdrop: {
-		position: "fixed",
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backgroundColor: "rgba(0, 0, 0, 0.5)",
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-		zIndex: 100,
-	},
-	confirmationModalContainer: {
-		backgroundColor: "white",
-		padding: "20px",
-		borderRadius: "10px",
-		textAlign: "center",
-		display: "flex",
-		flexDirection: "column",
-		gap: "15px",
-	},
-	confirmButton: {
-		padding: "10px",
-		backgroundColor: "#4CAF50",
-		color: "white",
-		border: "none",
-		borderRadius: "5px",
-		cursor: "pointer",
-	},
-	cancelButton: {
-		padding: "10px",
-		backgroundColor: "#f44336",
-		color: "white",
-		border: "none",
-		borderRadius: "5px",
-		cursor: "pointer",
-	},
-	qrModalContainer: {
-		backgroundColor: "white",
-		padding: "20px",
-		borderRadius: "10px",
-		display: "flex",
-		flexDirection: "column",
-		gap: "15px",
-		alignItems: "center",
-	},
-	qrScanner: {
-		width: "300px",
-		height: "300px",
 	},
 	modalButton: {
 		width: "100%",
