@@ -52,7 +52,7 @@ const styles = {
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-		zIndex: 20, // Base z-index for modals
+		zIndex: 20,
 	},
 	modalContainer: {
 		backgroundColor: "white",
@@ -100,7 +100,7 @@ const styles = {
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-		zIndex: 100, // Highest z-index
+		zIndex: 100,
 	},
 	confirmationModalContainer: {
 		backgroundColor: "white",
@@ -147,6 +147,53 @@ const styles = {
 		border: "none",
 		borderRadius: "5px",
 		cursor: "pointer",
+	},
+	userMenuContainer: {
+		position: "fixed",
+		bottom: "20px",
+		left: "20px",
+		zIndex: 1000,
+	},
+	userIcon: {
+		width: "60px",
+		height: "60px",
+		borderRadius: "50%",
+		backgroundColor: "#007BFF",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		cursor: "pointer",
+	},
+	userIconImage: {
+		width: "70%",
+		height: "70%",
+	},
+	menu: {
+		position: "absolute",
+		bottom: "60px", // Move menu above the button
+		left: "0",
+		backgroundColor: "#ffffff",
+		borderRadius: "8px",
+		boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+		padding: "10px",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+	},
+	menuItem: {
+		background: "none",
+		border: "none",
+		padding: "10px 20px",
+		cursor: "pointer",
+		width: "100%",
+		textAlign: "center",
+		borderRadius: "4px",
+		margin: "5px 0",
+		fontSize: "16px",
+		color: "#333",
+	},
+	menuItemHover: {
+		backgroundColor: "#f0f0f0",
 	},
 };
 
