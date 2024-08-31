@@ -77,11 +77,14 @@ const styles = {
 	},
 	input: {
 		width: "100%",
-		padding: "10px",
-		margin: "10px 0",
-		borderRadius: "4px",
-		border: "1px solid #ccc",
+		padding: "12px 15px",
+		margin: "15px 0", 
+		borderRadius: "6px", 
+		border: "1px solid #ccc", 
 		fontSize: "16px",
+		boxSizing: "border-box", 
+		outline: "none", 
+		transition: "border-color 0.3s",
 	},
 	submitButton: {
 		padding: "10px",
@@ -172,6 +175,7 @@ const styles = {
 	userIconImage: {
 		width: "70%",
 		height: "70%",
+		filter: "invert(100%) brightness(2)", 
 	},
 	menu: {
 		position: "absolute",
