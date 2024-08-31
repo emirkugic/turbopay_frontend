@@ -25,10 +25,9 @@ const ModalManager = ({
 	const handleSendMoneyClick = async () => {
 		if (sendAmount && recipientEmail) {
 			try {
-				const web3 = new Web3(window.ethereum); // Initialize Web3
-				const amountInWei = web3.utils.toWei(sendAmount, "ether"); // Convert to Wei
+				const web3 = new Web3(window.ethereum); 
+				const amountInWei = web3.utils.toWei(sendAmount, "ether"); 
 
-				// Prepare the transaction with the backend
 				const txData = await prepareAndSendTransaction(
 					recipientEmail,
 					amountInWei

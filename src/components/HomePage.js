@@ -8,7 +8,7 @@ import styles from "./styles";
 import { fetchUserBalance, fetchUserFinanceHistory } from "../utils/api";
 
 const HomePage = () => {
-	const [balanceInUSD, setBalanceInUSD] = useState(0);
+	const [balance, setBalance] = useState(0);
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
 	const [modalStage, setModalStage] = useState("initial");
@@ -19,31 +19,13 @@ const HomePage = () => {
 	const modalRef = useRef(null);
 	const navigate = useNavigate();
 
-	const fetchETHPrice = async () => {
-		try {
-			const response = await fetch(
-				"https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
-			);
-			const data = await response.json();
-			return data.ethereum.usd;
-		} catch (error) {
-			console.error("Failed to fetch ETH price:", error);
-			return null;
-		}
-	};
-
 	useEffect(() => {
 		const email = localStorage.getItem("email");
 
 		if (email) {
-			// Fetch the user's balance in ETH and convert to USD
 			fetchUserBalance(email)
-				.then(async (balance) => {
-					const ethPrice = await fetchETHPrice();
-					if (ethPrice) {
-						const balanceInUSD = (balance * ethPrice).toFixed(2);
-						setBalanceInUSD(balanceInUSD);
-					}
+				.then((balance) => {
+					setBalance(balance);
 				})
 				.catch((error) => {
 					console.error("Failed to fetch user balance:", error);
@@ -127,12 +109,12 @@ const HomePage = () => {
 
 	return (
 		<div style={styles.container}>
-			<h1>Your Balance: ${balanceInUSD} USD</h1>
+			<h1>Your Balance: {balance} ETH</h1>{" "}
+			{/* Changed to display balance in ETH */}
 			<FinanceHistory history={history} />
 			<button style={styles.addButton} onClick={handlePlusClick}>
 				+
 			</button>
-
 			{showModal && (
 				<ModalManager
 					modalRef={modalRef}
@@ -141,13 +123,11 @@ const HomePage = () => {
 					setShowModal={setShowModal}
 				/>
 			)}
-
 			<UserMenu
 				onDeposit={handleDeposit}
 				onWithdraw={handleWithdraw}
 				onLogout={handleLogout}
 			/>
-
 			{depositWithdrawModalOpen && (
 				<DepositWithdrawModal
 					transactionType={transactionType}
