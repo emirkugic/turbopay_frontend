@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import users from "../../data/users.json";
+import { loginUser } from "../../utils/api";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [error, setError] = useState(null);
 	const navigate = useNavigate();
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const user = users.find(
-			(user) => user.email === email && user.password === password
-		);
-		if (user) {
-			localStorage.setItem("token", "dummy-jwt-token");
+		try {
+			const token = await loginUser(email, password);
+			localStorage.setItem("token", token);
+			localStorage.setItem("email", email);
 			navigate("/home");
-		} else {
-			alert("Invalid email or password");
+		} catch (error) {
+			setError("Invalid email or password");
 		}
 	};
 
@@ -44,6 +44,7 @@ const Login = () => {
 					Login
 				</button>
 			</form>
+			{error && <p style={styles.error}>{error}</p>}
 			<p>
 				Don't have an account? <a href="/register">Register here</a>
 			</p>
@@ -77,6 +78,10 @@ const styles = {
 		color: "white",
 		border: "none",
 		cursor: "pointer",
+	},
+	error: {
+		color: "red",
+		marginTop: "10px",
 	},
 };
 

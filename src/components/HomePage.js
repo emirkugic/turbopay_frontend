@@ -5,7 +5,7 @@ import UserMenu from "./UserMenu";
 import DepositWithdrawModal from "./DepositWithdrawModal";
 import { useNavigate } from "react-router-dom";
 import styles from "./styles";
-import financeData from "../data/financeData";
+import { fetchUserBalance } from "../utils/api";
 
 const HomePage = () => {
 	const [balance, setBalance] = useState(0);
@@ -20,8 +20,19 @@ const HomePage = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		setBalance(financeData.balance);
-		setHistory(financeData.history);
+		const email = localStorage.getItem("email");
+
+		if (email) {
+			fetchUserBalance(email)
+				.then((balance) => {
+					setBalance(balance);
+				})
+				.catch((error) => {
+					console.error("Failed to fetch user balance:", error);
+				});
+		} else {
+			console.error("No email found in localStorage");
+		}
 	}, []);
 
 	useEffect(() => {
@@ -75,13 +86,14 @@ const HomePage = () => {
 
 	const handleLogout = () => {
 		localStorage.removeItem("jwt");
+		localStorage.removeItem("email");
 		navigate("/login");
 		window.location.reload();
 	};
 
 	return (
 		<div style={styles.container}>
-			<h1>Your Balance: ${balance}</h1>
+			<h1>Your Balance: {balance} ETH</h1>
 			<FinanceHistory history={history} />
 			<button style={styles.addButton} onClick={handlePlusClick}>
 				+

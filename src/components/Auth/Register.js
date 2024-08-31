@@ -1,37 +1,29 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../utils/api";
 
 const Register = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [ethAddress, setEthAddress] = useState("");
+	const [error, setError] = useState(null);
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (password !== confirmPassword) {
-			alert("Passwords don't match");
+			setError("Passwords don't match");
 			return;
 		}
 
 		try {
-			// Simulate sending a POST request
-			const userData = {
-				name,
-				email,
-				password,
-			};
-			console.log("Sending user data:", userData);
+			await registerUser(name, email, password, ethAddress);
 
-			// Future: Replace with actual POST request
-			// await axios.post('/api/register', userData);
-
-			// Navigate to the login page
 			navigate("/login");
 		} catch (error) {
-			console.error("Error during registration:", error);
-			alert("Registration failed. Please try again later.");
+			setError("Registration failed. Please try again later.");
 		}
 	};
 
@@ -71,10 +63,19 @@ const Register = () => {
 					style={styles.input}
 					required
 				/>
+				<input
+					type="text"
+					placeholder="Ethereum Address"
+					value={ethAddress}
+					onChange={(e) => setEthAddress(e.target.value)}
+					style={styles.input}
+					required
+				/>
 				<button type="submit" style={styles.button}>
 					Register
 				</button>
 			</form>
+			{error && <p style={styles.error}>{error}</p>}
 			<p>
 				Already have an account? <a href="/login">Login here</a>
 			</p>
@@ -108,6 +109,10 @@ const styles = {
 		color: "white",
 		border: "none",
 		cursor: "pointer",
+	},
+	error: {
+		color: "red",
+		marginTop: "10px",
 	},
 };
 
