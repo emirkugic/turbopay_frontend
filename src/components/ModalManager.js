@@ -4,6 +4,8 @@ import QRScannerModal from "./QRScannerModal";
 import ConfirmationModal from "./ConfirmationModal";
 import RequestMoneyModal from "./RequestMoneyModal";
 import QRCodeDisplayModal from "./QRCodeDisplayModal";
+import { prepareAndSendTransaction } from "../utils/api";
+import Web3 from "web3";
 import styles from "./styles";
 
 const ModalManager = ({
@@ -20,25 +22,57 @@ const ModalManager = ({
 	const [showRequestMoneyModal, setShowRequestMoneyModal] = useState(false);
 	const [showQrDisplayModal, setShowQrDisplayModal] = useState(false);
 
-	const handleSendMoneyClick = () => {
+	const handleSendMoneyClick = async () => {
 		if (sendAmount && recipientEmail) {
-			console.log("Preparing to send money");
-			setQrData({ amount: sendAmount, recipientEmail });
-			setShowConfirmationModal(true);
+			try {
+				const web3 = new Web3(window.ethereum); // Initialize Web3
+				const amountInWei = web3.utils.toWei(sendAmount, "ether"); // Convert to Wei
+
+				// Prepare the transaction with the backend
+				const txData = await prepareAndSendTransaction(
+					recipientEmail,
+					amountInWei
+				);
+
+				if (typeof window.ethereum !== "undefined") {
+					await window.ethereum.request({ method: "eth_requestAccounts" });
+					const accounts = await web3.eth.getAccounts();
+					const account = accounts[0];
+
+					const tx = {
+						from: account,
+						to: txData.to,
+						value: txData.value,
+						data: txData.data,
+					};
+
+					// Send the transaction
+					const txHash = await web3.eth.sendTransaction(tx);
+					console.log("Transaction Hash:", txHash);
+					alert("Send successful! Transaction Hash: " + txHash.transactionHash);
+
+					setShowConfirmationModal(false);
+					setShowModal(false);
+					setSendAmount("");
+					setRecipientEmail("");
+					setQrData(null);
+				} else {
+					alert(
+						"MetaMask is not installed. Please install MetaMask and try again."
+					);
+				}
+			} catch (error) {
+				console.error("Error sending money:", error);
+				alert("Failed to send money: " + error.message);
+			}
 		} else {
 			alert("Please fill in both fields.");
 		}
 	};
 
 	const handleConfirmSend = () => {
-		console.log("Sending money...");
-		console.log("Amount:", qrData.amount);
-		console.log("Recipient's email:", qrData.recipientEmail);
 		setShowConfirmationModal(false);
-		setShowModal(false);
-		setSendAmount("");
-		setRecipientEmail("");
-		setQrData(null);
+		handleSendMoneyClick();
 	};
 
 	const handleGenerateQR = (data) => {

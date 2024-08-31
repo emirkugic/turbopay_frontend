@@ -66,3 +66,50 @@ export const fetchUserBalance = async (email) => {
 		throw error;
 	}
 };
+
+export const fetchUserFinanceHistory = async (email) => {
+	try {
+		const response = await fetch(
+			`${BASE_URL}/transactions/log-email?email=${encodeURIComponent(email)}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error("Failed to fetch finance history");
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error("Error fetching finance history:", error);
+		throw error;
+	}
+};
+
+export const prepareAndSendTransaction = async (
+	recipientEmail,
+	amountInWei
+) => {
+	try {
+		const response = await fetch(`${BASE_URL}/transactions/prepare-send`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ recipientEmail, amountInWei }),
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to prepare transaction");
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error("Error preparing transaction:", error);
+		throw error;
+	}
+};
