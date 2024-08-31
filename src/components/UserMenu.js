@@ -8,6 +8,11 @@ const UserMenu = ({ onDeposit, onWithdraw, onLogout }) => {
 		setMenuOpen(!menuOpen);
 	};
 
+	const handleMenuSelection = (action) => {
+		action();
+		setMenuOpen(false);
+	};
+
 	return (
 		<div style={styles.userMenuContainer}>
 			<div style={styles.userIcon} onClick={toggleMenu}>
@@ -19,13 +24,22 @@ const UserMenu = ({ onDeposit, onWithdraw, onLogout }) => {
 			</div>
 			{menuOpen && (
 				<div style={styles.menu}>
-					<button style={styles.menuItem} onClick={onDeposit}>
+					<button
+						style={styles.menuItem}
+						onClick={() => handleMenuSelection(onDeposit)}
+					>
 						Deposit
 					</button>
-					<button style={styles.menuItem} onClick={onWithdraw}>
+					<button
+						style={styles.menuItem}
+						onClick={() => handleMenuSelection(onWithdraw)}
+					>
 						Withdraw
 					</button>
-					<button style={styles.menuItem} onClick={onLogout}>
+					<button
+						style={styles.menuItem}
+						onClick={() => handleMenuSelection(onLogout)}
+					>
 						Logout
 					</button>
 				</div>

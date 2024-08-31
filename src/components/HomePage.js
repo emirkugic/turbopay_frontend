@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import ModalManager from "./ModalManager";
 import FinanceHistory from "./FinanceHistory";
 import UserMenu from "./UserMenu";
+import DepositWithdrawModal from "./DepositWithdrawModal";
+import { useNavigate } from "react-router-dom";
 import styles from "./styles";
 import financeData from "../data/financeData";
 
@@ -10,8 +12,12 @@ const HomePage = () => {
 	const [history, setHistory] = useState([]);
 	const [showModal, setShowModal] = useState(false);
 	const [modalStage, setModalStage] = useState("initial");
+	const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
+		useState(false);
+	const [transactionType, setTransactionType] = useState("");
 
 	const modalRef = useRef(null);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		setBalance(financeData.balance);
@@ -31,7 +37,6 @@ const HomePage = () => {
 		};
 	}, [modalRef]);
 
-	// Inject Botpress chat bubble script
 	useEffect(() => {
 		const script1 = document.createElement("script");
 		script1.src = "https://cdn.botpress.cloud/webchat/v2.1/inject.js";
@@ -59,18 +64,19 @@ const HomePage = () => {
 	};
 
 	const handleDeposit = () => {
-		console.log("Deposit clicked");
-		// Implement deposit logic here
+		setTransactionType("deposit");
+		setDepositWithdrawModalOpen(true);
 	};
 
 	const handleWithdraw = () => {
-		console.log("Withdraw clicked");
-		// Implement withdraw logic here
+		setTransactionType("withdraw");
+		setDepositWithdrawModalOpen(true);
 	};
 
 	const handleLogout = () => {
-		console.log("Logout clicked");
-		// Implement logout logic here
+		localStorage.removeItem("jwt");
+		navigate("/login");
+		window.location.reload();
 	};
 
 	return (
@@ -95,6 +101,13 @@ const HomePage = () => {
 				onWithdraw={handleWithdraw}
 				onLogout={handleLogout}
 			/>
+
+			{depositWithdrawModalOpen && (
+				<DepositWithdrawModal
+					transactionType={transactionType}
+					onClose={() => setDepositWithdrawModalOpen(false)}
+				/>
+			)}
 		</div>
 	);
 };

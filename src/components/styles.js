@@ -46,21 +46,21 @@ const styles = {
 		position: "fixed",
 		top: 0,
 		left: 0,
-		right: 0,
-		bottom: 0,
+		width: "100%",
+		height: "100%",
 		backgroundColor: "rgba(0, 0, 0, 0.5)",
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-		zIndex: 20,
+		zIndex: 1000,
 	},
 	modalContainer: {
-		backgroundColor: "white",
+		backgroundColor: "#fff",
+		borderRadius: "8px",
 		padding: "20px",
-		borderRadius: "10px",
-		display: "flex",
-		flexDirection: "column",
-		gap: "10px",
+		width: "300px",
+		boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+		textAlign: "center",
 	},
 	manualModalContainer: {
 		backgroundColor: "white",
@@ -76,10 +76,12 @@ const styles = {
 		marginBottom: "10px",
 	},
 	input: {
+		width: "100%",
 		padding: "10px",
 		margin: "10px 0",
-		width: "100%",
-		boxSizing: "border-box",
+		borderRadius: "4px",
+		border: "1px solid #ccc",
+		fontSize: "16px",
 	},
 	submitButton: {
 		padding: "10px",
@@ -141,12 +143,15 @@ const styles = {
 		height: "300px",
 	},
 	modalButton: {
-		padding: "10px 20px",
-		backgroundColor: "#4CAF50",
-		color: "white",
+		width: "100%",
+		padding: "10px",
+		marginTop: "10px",
+		borderRadius: "4px",
 		border: "none",
-		borderRadius: "5px",
 		cursor: "pointer",
+		fontSize: "16px",
+		backgroundColor: "#007BFF",
+		color: "#fff",
 	},
 	userMenuContainer: {
 		position: "fixed",
@@ -170,7 +175,7 @@ const styles = {
 	},
 	menu: {
 		position: "absolute",
-		bottom: "60px", // Move menu above the button
+		bottom: "60px",
 		left: "0",
 		backgroundColor: "#ffffff",
 		borderRadius: "8px",
@@ -194,6 +199,9 @@ const styles = {
 	},
 	menuItemHover: {
 		backgroundColor: "#f0f0f0",
+	},
+	modalButtonCancel: {
+		backgroundColor: "#ccc",
 	},
 };
 
